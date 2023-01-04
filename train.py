@@ -23,7 +23,19 @@ from torch.distributed import init_process_group, destroy_process_group
 
 from model import GPTConfig, GPT
 import argh
+from functools import wraps
 
+def wrap_wandb_config(func):
+    @wraps(func)
+    def wrapper(**kwargs):
+        """Wrap config in wandb"""
+ 
+        # Extend some capabilities of func
+        wandb.config = kwargs
+        func(**kwargs)
+    return wrapper
+
+@wrap_wandb_config
 def train(
         # default config values
         # I/O
